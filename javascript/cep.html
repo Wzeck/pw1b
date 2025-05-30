@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endereço</title>
+</head>
+
+<body>
+    <form onsubmit="return validarFormulario()" action="salvar.html" method="post">
+        <label>Cep</label>
+        <input onkeydown="ValidarTexto()" type="text" name="cep" id="cep" class="campo" />
+        <button id="" type="button" onclick="Clicar()">
+            Consultar o cep
+        </button>
+        <br><br>
+        <label>Endereço</label>
+        <input type="text" name="endereco" id="endereco" class="campo" /> <br><br>
+        <label>Número</label>
+        <input type="text" name="numero" id="numero" class="campo" /><br><br>
+        <label>Bairro</label>
+        <input type="text" name="bairro" id="bairro" class="campo" /><br><br>
+        <label>Cidade</label>
+        <input type="text" name="cidade" id="cidade" class="campo" /> <br><br>
+        <label>Estado</label>
+        <input type="text" name="estado" id="estado" class="campo" /> <br><br>
+        <button id="botao" class="botao" type="submit">
+            Enviar dados
+        </button>
+    </form>
+
+    <script>
+
+        function Clicar() {
+            var input = document.getElementById("cep")
+
+            var url = "https://viacep.com.br/ws/" + input.value + "/json/"
+            fetch(url)
+                .then(response => response.json())
+                .then(dados => {
+                    var cep = document.getElementById('cep')
+                    var endereco = document.getElementById('endereco')
+                    var numero = document.getElementById('numero')
+                    var bairro = document.getElementById('bairro')
+                    var cidade = document.getElementById('cidade')
+                    var estado = document.getElementById('estado')
+                    endereco.value = dados.logradouro
+                    bairro.value = dados.bairro
+                    cidade.value = dados.localidade
+                    estado.value = dados.estado
+                }
+                )
+                .catch(error => console.error('Erro:', error));
+        }
+
+        function validarFormulario() {
+            var cep = document.getElementById('cep')
+            var endereco = document.getElementById('endereco')
+            var numero = document.getElementById('numero')
+            var bairro = document.getElementById('bairro')
+            var cidade = document.getElementById('cidade')
+            var estado = document.getElementById('estado')
+
+            if (cep.value == "") {
+                alert('campo cep não pode ficar em branco')
+                cep.style.border = '2px solid red'
+                return false;
+            }
+
+        }
+
+        function ValidarTexto() {
+            var cep = document.getElementById('cep')
+            console.log(cep.style.border)
+            if (cep.style.border != "") {
+                cep.style.border = ""
+            }
+        }
+    </script>
+
+<script>
+function ValidarFormulario()
+{
+    var cep = document.getElementById('cep')
+    if(cep.value == "")
+    {
+        alert("O campo cep deve ser preenchido")
+        return false
+    }
+}
+
+function piscarbotao()
+{
+    var piscador = document.getElementById('piscador')
+    if(piscador.style.backgroundColor == 'red' )
+    {
+        piscador.style.backgroundColor = 'blue'
+    }else{
+        piscador.style.backgroundColor = 'red'
+    }
+}
+</script>
+</body>
+</html>
