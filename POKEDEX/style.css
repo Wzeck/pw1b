@@ -1,0 +1,183 @@
+@import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Oxanium', cursive;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Oxanium', cursive;
+  text-align: center;
+  min-height: 100vh;
+  background:
+  linear-gradient(to bottom, #d80a0a, #000000),
+  url("data:image/svg+xml,%3csvg width='100' height='100' viewBox='0 0 100 100' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='50' cy='50' r='40' stroke='%23ffffff' stroke-width='5' stroke-opacity='0.07'/%3e%3cline x1='10' y1='50' x2='90' y2='50' stroke='%23ffffff' stroke-width='5' stroke-opacity='0.07'/%3e%3ccircle cx='50' cy='50' r='15' fill='%23ffffff' fill-opacity='0.07'/%3e%3ccircle cx='50' cy='50' r='8' fill='%23d80a0a' fill-opacity='0.1'/%3e%3c/svg%3e") repeat;
+  background-blend-mode: overlay;
+  background-size: 100px 100px;
+  font-size: 18px; /* Base para textos */
+}
+
+main {
+  display: inline-block;
+  margin-top: 2.5%;
+  padding: 20px;
+  position: relative;
+  max-width: 480px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 30px; /* aumentei para deixar mais arredondado */
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  color: #3a444d;
+  text-align: left;
+  font-size: 1.15rem;
+  border: 10px solid black;
+  transition: border-radius 0.3s ease;
+}
+
+.pokedex {
+  width: 100%;
+  max-width: 480px;
+  border-radius: 30px; /* adicionado arredondamento para a pokedex */
+  overflow: hidden; /* para evitar conteúdos ultrapassem as bordas */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.pokemon_image {
+  width: 256px;
+  height: 256px;
+  image-rendering: pixelated;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto 30px auto;
+  border-radius: 20px; /* suavizando bordas da imagem para combinar */
+  transition: border-radius 0.3s ease;
+}
+
+.pokemon_name {
+  text-transform: capitalize;
+  font-weight: 900;
+  font-size: clamp(26px, 6vw, 36px);
+  color: #000000;
+  text-align: center;
+  margin-bottom: 0.35em;
+}
+
+.pokemon_data {
+  font-weight: 700;
+  color: #555;
+  font-size: clamp(20px, 5vw, 26px);
+  text-align: center;
+  margin-bottom: 1.2em;
+}
+
+.form {
+  width: 100%;
+  margin-bottom: 2em;
+}
+
+.input_search {
+  width: 100%;
+  padding: 14px 20px;
+  outline: none;
+  border: 2px solid #333;
+  border-radius: 14px; /* mais arredondado */
+  font-weight: 700;
+  color: #3a444d;
+  font-size: clamp(16px, 4vw, 20px);
+  box-shadow: -3px 4px 0 #888, -5px 7px 0 #333;
+  font-family: 'Oxanium', cursive;
+  transition: border-radius 0.3s ease;
+}
+
+.buttons {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  margin-bottom: 2em;
+}
+
+.button {
+  flex: 1;
+  padding: 14px 22px;
+  border: 2px solid #000;
+  border-radius: 20px; /* aumentado para arredondamento maior */
+  font-size: clamp(18px, 5vw, 22px);
+  font-weight: 700;
+  color: white;
+  background-color: #444;
+  box-shadow: -2px 3px 0 #222, -4px 6px 0 #000;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-radius 0.3s ease;
+  font-family: 'Oxanium', cursive;
+}
+
+.button:hover {
+  background-color: #666;
+}
+
+.button:active {
+  box-shadow: inset -4px 4px 0 #222;
+  font-size: clamp(17px, 4.5vw, 21px);
+}
+
+.voltar {
+  flex: 1;
+  padding: 14px 22px;
+  border: 2px solid #000;
+  border-radius: 20px;
+  font-size: clamp(18px, 5vw, 22px);
+  font-weight: 700;
+  color: white;
+  background-color: #444;
+  box-shadow: -2px 3px 0 #222, -4px 6px 0 #000;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-radius 0.3s ease, box-shadow 0.3s ease;
+  font-family: 'Oxanium', cursive;
+  text-align: center;
+  user-select: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  max-width: 160px;
+}
+
+.voltar:hover {
+  background-color: #666;
+}
+
+.voltar:active {
+  box-shadow: inset -4px 4px 0 #222;
+  font-size: clamp(17px, 4.5vw, 21px);
+}
+
+/* Estilo para habilidades e habitat */
+
+.abilities_list {
+  list-style: disc inside;
+  padding-left: 1em;
+  margin-top: 0.75em;
+  color: #000000;
+  font-weight: 700;
+  text-transform: capitalize;
+  font-size: clamp(16px, 4vw, 18px);
+  max-width: 100%;
+  word-wrap: break-word;
+  font-family: 'Oxanium', cursive;
+}
+
+.pokemon_habitat {
+  margin-top: 1.5em;
+  font-style: italic;
+  color: #000000;
+  font-size: clamp(20px, 4vw, 18px);
+  text-transform: capitalize;
+  max-width: 120%;
+  word-wrap: break-word;
+  text-align: center;
+  font-family: 'Oxanium', cursive;
+}
+

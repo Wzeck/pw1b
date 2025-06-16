@@ -1,20 +1,80 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio</title>
-    <link rel="stylesheet" href="inicio.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Início</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700;800&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Oxanium', cursive;
+    }
+
+    body {
+      background: linear-gradient(to bottom, #d80a0a, #000000);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+      color: #3a444d;
+    }
+
+    main {
+      max-width: 480px;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.95);
+      border: 5px solid black;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+      padding: 40px 30px;
+    }
+
+    h1 {
+      font-size: clamp(28px, 7vw, 36px);
+      color: #d80a0a;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+    }
+
+    p {
+      font-size: clamp(16px, 4vw, 20px);
+      margin-bottom: 2rem;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      padding: 16px 32px;
+      background-color: #444;
+      color: white;
+      border-radius: 20px;
+      border: 3px solid #000;
+      font-weight: 700;
+      font-size: clamp(16px, 4vw, 20px);
+      cursor: pointer;
+      box-shadow: -2px 3px 0 #222, -4px 6px 0 #000;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #666;
+    }
+  </style>
 </head>
 <body>
-    <div>
-        <button class="botao1">
-            <a href="index.html" class="botao2">
-            COMEÇAR
-        </button>
-    </a>
-    </div>
-    
+  <main>
+    <h1>Bem-vindo à Pokedex</h1>
+    <p>Explore todos os Pokémons e suas características nesta incrível aplicação feita com estilo e personalidade!</p>
+    <a href="index.html" class="btn-primary" role="button">Entrar</a>
+  </main>
 </body>
 </html>
+
