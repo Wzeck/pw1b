@@ -1,80 +1,144 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Início</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700;800&display=swap');
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokébola Interativa</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oxanium:wght@300;400;500;600;700;800&display=swap');
+        
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Oxanium', cursive;
+}
+        
+body {
+    background: linear-gradient(to bottom, #3a444d, #000000);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+        
+.pokeball-container {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    cursor: pointer;
+}
+        
+.pokeball {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.8s ease-in-out;
+    transform-style: preserve-3d;
+}
+        
+.pokeball.open {
+    transform: rotateY(180deg);
+}
+        
+.pokeball-top {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    background: radial-gradient(circle at 50% 0%, #ff1c1c, #a00000);
+    border-radius: 150px 150px 0 0;
+    border: 10px solid #000;
+    box-sizing: border-box;
+    top: 0;
+    transform-origin: bottom center;
+    transition: transform 0.8s ease-in-out;
+    z-index: 2;
+}
+        
+.pokeball.open .pokeball-top {
+    transform: rotateX(180deg);
+}
+        
+.pokeball-bottom {
+    position: absolute;
+    width: 100%;
+    height: 50%;
+    background: radial-gradient(circle at 50% 100%, #ffffff, #e0e0e0);
+    border-radius: 0 0 150px 150px;
+    border: 10px solid #000;
+    box-sizing: border-box;
+    bottom: 0;
+    transform-origin: top center;
+    transition: transform 0.8s ease-in-out;
+    z-index: 2;
+}
+        
+.pokeball.open .pokeball-bottom {
+    transform: rotateX(180deg);
+}
+        
+.pokeball-middle {
+    position: absolute;
+    width: 100%;
+    height: 20px;
+    background: #000;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 3;
+}
+        
+.pokeball-button {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle at 50% 50%, #ffffff, #c0c0c0);
+    border: 8px solid #000;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+    font-weight: 900;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    /* Remove qualquer estilo de link */
+    text-decoration: none !important;
+    outline: none;
+}
+        
+.pokeball-button:hover {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+}
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Oxanium', cursive;
-    }
-
-    body {
-      background: linear-gradient(to bottom, #d80a0a, #000000);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-      padding: 20px;
-      color: #3a444d;
-    }
-
-    main {
-      max-width: 480px;
-      width: 100%;
-      background-color: rgba(255, 255, 255, 0.95);
-      border: 5px solid black;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
-      padding: 40px 30px;
-    }
-
-    h1 {
-      font-size: clamp(28px, 7vw, 36px);
-      color: #d80a0a;
-      font-weight: 900;
-      margin-bottom: 1rem;
-      text-transform: uppercase;
-    }
-
-    p {
-      font-size: clamp(16px, 4vw, 20px);
-      margin-bottom: 2rem;
-      font-weight: 600;
-    }
-
-    .btn-primary {
-      display: inline-block;
-      padding: 16px 32px;
-      background-color: #444;
-      color: white;
-      border-radius: 20px;
-      border: 3px solid #000;
-      font-weight: 700;
-      font-size: clamp(16px, 4vw, 20px);
-      cursor: pointer;
-      box-shadow: -2px 3px 0 #222, -4px 6px 0 #000;
-      text-decoration: none;
-      transition: background-color 0.3s ease;
-    }
-
-    .btn-primary:hover {
-      background-color: #666;
-    }
-  </style>
+</style>
 </head>
+
 <body>
-  <main>
-    <h1>Bem-vindo à Pokedex</h1>
-    <p>Explore todos os Pokémons e suas características nesta incrível aplicação feita com estilo e personalidade!</p>
-    <a href="index.html" class="btn-primary" role="button">Entrar</a>
-  </main>
+    <div class="pokeball-container">
+        <div class="pokeball" id="pokeball">
+            <div class="pokeball-top"></div>
+            <div class="pokeball-bottom"></div>
+            <div class="pokeball-middle"></div>
+            <a href="index.html" style="text-decoration: none;">
+                <div class="pokeball-button" id="pokeballButton">GO</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const pokeball = document.getElementById('pokeball');
+        const pokeballButton = document.getElementById('pokeballButton');
+        
+        pokeballButton.addEventListener('click', () => {
+            pokeball.classList.toggle('open');
+        });
+    </script>
 </body>
 </html>
-
