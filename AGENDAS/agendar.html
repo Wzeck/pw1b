@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agendar Sala</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+<header>
+    <h1>Agendamento de Salas</h1>
+</header>
+
+<main>
+<div class="login-container">
+<h2>Nova Reserva</h2>
+<form method="POST" action="agendar.php">
+            
+<label for="sala">Sala:</label>
+<select name="id_sala" id="sala" required>
+<option value="">Selecione uma sala</option>
+<option value="1">Laboratório de Informática 1</option>
+<option value="2">Laboratório de Informática 2</option>
+<option value="3">Oficina de Eletrônica</option>
+<option value="4">Auditório</option>
+<!-- Em produção, você pode carregar isso dinamicamente do banco -->
+</select><br>
+
+<label for="data">Data da Reserva:</label>
+<input type="date" name="data_reserva" id="data" required><br>
+
+<label for="hora_inicio">Hora Início:</label>
+<input type="time" name="hora_inicio" id="hora_inicio" required><br>
+
+<label for="hora_fim">Hora Fim:</label>
+<input type="time" name="hora_fim" id="hora_fim" required><br>
+
+<button type="submit">Agendar Sala</button>
+</form>
+</div>
+</main>
+
+<footer>
+</footer>
+
+</body>
+</html>
