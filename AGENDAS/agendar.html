@@ -6,30 +6,32 @@
 <title>Agendar Sala</title>
 <link rel="stylesheet" href="login.css">
 <style>
+.ocupado { background-color: #ff9999; }   
+.meu { background-color: #99ffb3; }      
+.livre { background-color: #e6e6e6; }    
 table {border-collapse: collapse; width: 100%; margin-top: 20px;}
 th, td {border: 1px solid #ccc; padding: 8px; text-align: center;}
 th {background-color: #f4f4f4;}
-.ocupado {background-color: #f28c8c;}
-.meu {background-color: #8cf2a0;}
-.livre {background-color: #f2f2f2;}
 </style>
 </head>
+
 <body>
 <header>
     <h1>Agendamento de Salas</h1>
 </header>
+
 <main>
 <div class="login-container">
 <h2>Nova Reserva</h2>
 
 <form method="POST" action="agendar.php" id="formAgendar">
-<label for="sala">Sala:</label>
+    <label for="sala">Sala:</label>
 <select name="id_sala" id="sala" required>
-<option value="">Selecione uma sala</option>
-<option value="1">Laboratório de Informática 1</option>
-<option value="2">Laboratório de Informática 2</option>
-<option value="3">Oficina de Eletrônica</option>
-<option value="4">Auditório</option>
+    <option value="">Selecione uma sala</option>
+    <option value="1">Laboratório de Informática 1</option>
+    <option value="2">Laboratório de Informática 2</option>
+    <option value="3">Oficina de Eletrônica</option>
+    <option value="4">Auditório</option>
 </select><br>
 
 <label for="data">Data da Reserva:</label>
@@ -47,36 +49,45 @@ th {background-color: #f4f4f4;}
 <h3>⏰ Horários já reservados</h3>
 <table id="tabelaHorarios">
 <tr>
-<th>Horário</th>
-<th>Status</th>
+    <th>Horário</th>
+    <th>Status</th>
+    <th>Usuário</th>
 </tr>
 </table>
-
 </div>
 </main>
 
 <script>
-const sala = document.getElementById('sala');
-const data = document.getElementById('data');
-const tabela = document.getElementById('tabelaHorarios');
+    const sala = document.getElementById('sala');
+    const data = document.getElementById('data');
+    const tabela = document.getElementById('tabelaHorarios');
 
-async function atualizarHorarios() {
-if(!sala.value || !data.value) return;
-const response = await fetch(`ver_horarios_json.php?id_sala=${sala.value}&data_reserva=${data.value}`);
-const horarios = await response.json();
+    async function atualizarHorarios() {
+    if(!sala.value || !data.value) return;
+    const response = await fetch(`ver_horarios_json.php?id_sala=${sala.value}&data_reserva=${data.value}`);
+    const horarios = await response.json();
 
-tabela.innerHTML = "<tr><th>Horário</th><th>Status</th></tr>";
-horarios.forEach(h => {
-const tr = document.createElement('tr');
-const tdHora = document.createElement('td');
-tdHora.textContent = h.hora;
-const tdStatus = document.createElement('td');
-tdStatus.textContent = h.status;
-tdStatus.className = h.class;
-tr.appendChild(tdHora);
-tr.appendChild(tdStatus);
-tabela.appendChild(tr);
+    tabela.innerHTML = "<tr><th>Horário</th><th>Status</th><th>Usuário</th></tr>";
+    horarios.forEach(h => {
+    const tr = document.createElement('tr');
+
+    const tdHora = document.createElement('td');
+    tdHora.textContent = h.hora;
+
+    const tdStatus = document.createElement('td');
+    tdStatus.textContent = h.status;
+    tdStatus.className = h.class;
+
+    const tdUsuario = document.createElement('td');
+    tdUsuario.textContent = h.usuario;
+
+    tr.appendChild(tdHora);
+    tr.appendChild(tdStatus);
+    tr.appendChild(tdUsuario);
+
+    tabela.appendChild(tr);
 });
+
 }
 
 // Atualiza ao mudar sala ou data
