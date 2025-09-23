@@ -8,7 +8,8 @@
 <style>
 .ocupado { background-color: #ff9999; }   
 .meu { background-color: #99ffb3; }      
-.livre { background-color: #e6e6e6; }    
+.livre { background-color: #e6e6e6; cursor: pointer; }    
+.livre:hover { background-color: #cce5ff; }
 table {border-collapse: collapse; width: 100%; margin-top: 20px;}
 th, td {border: 1px solid #ccc; padding: 8px; text-align: center;}
 th {background-color: #f4f4f4;}
@@ -26,27 +27,25 @@ th {background-color: #f4f4f4;}
 
 <form method="POST" action="agendar.php" id="formAgendar">
     <label for="sala">Sala:</label>
-<select name="id_sala" id="sala" required>
-    <option value="">Selecione uma sala</option>
-    <option value="1">Laboratório de Informática 1</option>
-    <option value="2">Laboratório de Informática 2</option>
-    <option value="3">Oficina de Eletrônica</option>
-    <option value="4">Auditório</option>
-</select><br>
+    <select name="id_sala" id="sala" required>
+        <option value="">Selecione uma sala</option>
+        <option value="1">Laboratório de Informática 1</option>
+        <option value="2">Laboratório de Informática 2</option>
+        <option value="3">Oficina de Eletrônica</option>
+        <option value="4">Auditório</option>
+    </select><br>
 
-<label for="data">Data da Reserva:</label>
-<input type="date" name="data_reserva" id="data" required><br>
+    <label for="data">Data da Reserva:</label>
+    <input type="date" name="data_reserva" id="data" required><br>
 
-<label for="hora_inicio">Hora Início:</label>
-<input type="time" name="hora_inicio" id="hora_inicio" required><br>
+    <!-- inputs escondidos, preenchidos ao clicar no horário -->
+    <input type="hidden" name="hora_inicio" id="hora_inicio">
+    <input type="hidden" name="hora_fim" id="hora_fim">
 
-<label for="hora_fim">Hora Fim:</label>
-<input type="time" name="hora_fim" id="hora_fim" required><br>
-
-<button type="submit">Agendar Sala</button>
+    <button type="submit">Agendar Sala</button>
 </form>
 
-<h3>⏰ Horários já reservados</h3>
+<h3>📅 Horários do Dia</h3>
 <table id="tabelaHorarios">
 <tr>
     <th>Horário</th>
@@ -58,39 +57,64 @@ th {background-color: #f4f4f4;}
 </main>
 
 <script>
-    const sala = document.getElementById('sala');
-    const data = document.getElementById('data');
-    const tabela = document.getElementById('tabelaHorarios');
+// Lista de feriados fixos (exemplo BR)
+const feriados = ["2025-01-01", "2025-04-21", "2025-05-01", "2025-09-07", "2025-10-12", "2025-11-02", "2025-11-15", "2025-12-25"];
 
-    async function atualizarHorarios() {
+const sala = document.getElementById('sala');
+const data = document.getElementById('data');
+const tabela = document.getElementById('tabelaHorarios');
+
+// Bloqueia finais de semana e feriados no calendário
+data.addEventListener("input", function() {
+    const d = new Date(this.value);
+    const diaSemana = d.getDay();
+    if (diaSemana === 0 || diaSemana === 6 || feriados.includes(this.value)) {
+        alert("Não é permitido reservar finais de semana ou feriados!");
+        this.value = "";
+        tabela.innerHTML = "<tr><th>Horário</th><th>Status</th><th>Usuário</th></tr>";
+    }
+});
+
+async function atualizarHorarios() {
     if(!sala.value || !data.value) return;
     const response = await fetch(`ver_horarios_json.php?id_sala=${sala.value}&data_reserva=${data.value}`);
     const horarios = await response.json();
 
     tabela.innerHTML = "<tr><th>Horário</th><th>Status</th><th>Usuário</th></tr>";
     horarios.forEach(h => {
-    const tr = document.createElement('tr');
+        const tr = document.createElement('tr');
 
-    const tdHora = document.createElement('td');
-    tdHora.textContent = h.hora;
+        const tdHora = document.createElement('td');
+        tdHora.textContent = h.hora;
 
-    const tdStatus = document.createElement('td');
-    tdStatus.textContent = h.status;
-    tdStatus.className = h.class;
+        const tdStatus = document.createElement('td');
+        tdStatus.textContent = h.status;
+        tdStatus.className = h.class;
 
-    const tdUsuario = document.createElement('td');
-    tdUsuario.textContent = h.usuario;
+        const tdUsuario = document.createElement('td');
+        tdUsuario.textContent = h.usuario;
 
-    tr.appendChild(tdHora);
-    tr.appendChild(tdStatus);
-    tr.appendChild(tdUsuario);
+        // Se horário livre -> clicável
+        if (h.class === "livre") {
+            tr.classList.add("livre");
+            tr.addEventListener("click", () => {
+                document.getElementById("hora_inicio").value = h.hora;
+                // calcula hora_fim (30 min depois)
+                const [h1, m1] = h.hora.split(":").map(Number);
+                const fim = new Date(0,0,0,h1,m1+30);
+                document.getElementById("hora_fim").value = fim.toTimeString().substring(0,5);
+                alert(`Você selecionou: ${h.hora} - ${document.getElementById("hora_fim").value}`);
+            });
+        }
 
-    tabela.appendChild(tr);
-});
-
+        tr.appendChild(tdHora);
+        tr.appendChild(tdStatus);
+        tr.appendChild(tdUsuario);
+        tabela.appendChild(tr);
+    });
 }
 
-// Atualiza ao mudar sala ou data
+// Atualiza tabela ao mudar sala ou data
 sala.addEventListener('change', atualizarHorarios);
 data.addEventListener('change', atualizarHorarios);
 </script>
