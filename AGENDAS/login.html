@@ -3,28 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="login.css"> <!-- Importa o CSS -->
+    <link rel="stylesheet" href="login.css">
 </head>
 <body>
     <div class="container">
         <h2>Login</h2>
-
-        <!-- Formulário de login: envia para login.php -->
         <form method="post" action="login.php">
-            
-            <!-- Email -->
             <label for="email">E-mail:</label>
             <input type="email" id="email" name="email" required>
-
-            <!-- Senha -->
             <label for="password">Senha:</label>
             <input type="password" id="password" name="password" required>
-
-            <!-- Botão -->
             <button type="submit">Entrar</button>
         </form>
-
-        <!-- Link para ir ao cadastro -->
         <p>Não tem conta? <a href="cadastro.html">Cadastre-se</a></p>
     </div>
 </body>
