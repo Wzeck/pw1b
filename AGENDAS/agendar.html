@@ -6,10 +6,13 @@
 <title>Agendar Sala</title>
 <link rel="stylesheet" href="login.css">
 <style>
-.ocupado { background-color: #ff9999; }   
-.meu { background-color: #99ffb3; }      
-.livre { background-color: #e6e6e6; cursor: pointer; }    
-.livre:hover { background-color: #cce5ff; }
+/* Estilos para diferenciar status dos horários */
+.ocupado { background-color: #ff9999; }   /* Vermelho claro: sala ocupada */
+.meu { background-color: #99ffb3; }       /* Verde claro: reserva do próprio usuário */
+.livre { background-color: #e6e6e6; cursor: pointer; } /* Cinza: disponível para reservar */
+.livre:hover { background-color: #cce5ff; } /* Azul claro ao passar o mouse */
+
+/* Estilos da tabela */
 table {border-collapse: collapse; width: 100%; margin-top: 20px;}
 th, td {border: 1px solid #ccc; padding: 8px; text-align: center;}
 th {background-color: #f4f4f4;}
@@ -25,6 +28,7 @@ th {background-color: #f4f4f4;}
 <div class="login-container">
 <h2>Nova Reserva</h2>
 
+<!-- Formulário para reservar sala -->
 <form method="POST" action="agendar.php" id="formAgendar">
     <label for="sala">Sala:</label>
     <select name="id_sala" id="sala" required>
@@ -38,13 +42,14 @@ th {background-color: #f4f4f4;}
     <label for="data">Data da Reserva:</label>
     <input type="date" name="data_reserva" id="data" required><br>
 
-    <!-- inputs escondidos, preenchidos ao clicar no horário -->
+    <!-- Inputs ocultos: preenchidos automaticamente ao escolher um horário -->
     <input type="hidden" name="hora_inicio" id="hora_inicio">
     <input type="hidden" name="hora_fim" id="hora_fim">
 
     <button type="submit">Agendar Sala</button>
 </form>
 
+<!-- Tabela que exibe os horários disponíveis e ocupados -->
 <h3>📅 Horários do Dia</h3>
 <table id="tabelaHorarios">
 <tr>
@@ -57,17 +62,17 @@ th {background-color: #f4f4f4;}
 </main>
 
 <script>
-// Lista de feriados fixos (exemplo BR)
+// Lista de feriados fixos
 const feriados = ["2025-01-01", "2025-04-21", "2025-05-01", "2025-09-07", "2025-10-12", "2025-11-02", "2025-11-15", "2025-12-25"];
 
 const sala = document.getElementById('sala');
 const data = document.getElementById('data');
 const tabela = document.getElementById('tabelaHorarios');
 
-// Bloqueia finais de semana e feriados no calendário
+// Bloqueia finais de semana e feriados
 data.addEventListener("input", function() {
     const d = new Date(this.value);
-    const diaSemana = d.getDay();
+    const diaSemana = d.getDay(); // 0 = domingo, 6 = sábado
     if (diaSemana === 0 || diaSemana === 6 || feriados.includes(this.value)) {
         alert("Não é permitido reservar finais de semana ou feriados!");
         this.value = "";
@@ -75,36 +80,42 @@ data.addEventListener("input", function() {
     }
 });
 
+// Função para buscar os horários do dia no servidor
 async function atualizarHorarios() {
     if(!sala.value || !data.value) return;
+
+    // Chama o PHP que retorna os horários em JSON
     const response = await fetch(`ver_horarios_json.php?id_sala=${sala.value}&data_reserva=${data.value}`);
     const horarios = await response.json();
 
+    // Monta a tabela novamente
     tabela.innerHTML = "<tr><th>Horário</th><th>Status</th><th>Usuário</th></tr>";
     horarios.forEach(h => {
-        const tr = document.createElement('tr');
+    const tr = document.createElement('tr');
 
-        const tdHora = document.createElement('td');
-        tdHora.textContent = h.hora;
+    const tdHora = document.createElement('td');
+    tdHora.textContent = h.hora;
 
-        const tdStatus = document.createElement('td');
-        tdStatus.textContent = h.status;
-        tdStatus.className = h.class;
+    const tdStatus = document.createElement('td');
+    tdStatus.textContent = h.status;
+    tdStatus.className = h.class;
 
-        const tdUsuario = document.createElement('td');
-        tdUsuario.textContent = h.usuario;
+    const tdUsuario = document.createElement('td');
+    tdUsuario.textContent = h.usuario;
 
-        // Se horário livre -> clicável
-        if (h.class === "livre") {
-            tr.classList.add("livre");
-            tr.addEventListener("click", () => {
-                document.getElementById("hora_inicio").value = h.hora;
-                // calcula hora_fim (30 min depois)
-                const [h1, m1] = h.hora.split(":").map(Number);
-                const fim = new Date(0,0,0,h1,m1+30);
-                document.getElementById("hora_fim").value = fim.toTimeString().substring(0,5);
-                alert(`Você selecionou: ${h.hora} - ${document.getElementById("hora_fim").value}`);
-            });
+        // Se estiver livre -> permite clicar
+    if (h.class === "livre") {
+        tr.classList.add("livre");
+        tr.addEventListener("click", () => {
+        document.getElementById("hora_inicio").value = h.hora;
+
+                // Calcula hora final (30 minutos depois do início)
+        const [h1, m1] = h.hora.split(":").map(Number);
+        const fim = new Date(0,0,0,h1,m1+30);
+        document.getElementById("hora_fim").value = fim.toTimeString().substring(0,5);
+
+        alert(`Você selecionou: ${h.hora} - ${document.getElementById("hora_fim").value}`);
+        });
         }
 
         tr.appendChild(tdHora);
@@ -114,7 +125,7 @@ async function atualizarHorarios() {
     });
 }
 
-// Atualiza tabela ao mudar sala ou data
+// Atualiza a tabela quando mudar a sala ou a data
 sala.addEventListener('change', atualizarHorarios);
 data.addEventListener('change', atualizarHorarios);
 </script>
