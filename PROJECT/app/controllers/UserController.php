@@ -1,69 +1,101 @@
 <?php
+
+// Classe responsável por "controlar" o fluxo entre o usuário, o modelo e a visualização
 class UserController {
+
+    // Variável que vai guardar o modelo (UserModel)
     private $model;
     
+    // Construtor: é chamado automaticamente quando criamos um novo UserController
     public function __construct() {
-        require_once 'app/models/User.php';
-        $this->model = new User();
+
+        // Inclui o arquivo do modelo (onde ficam as funções que acessam o banco)
+        require_once __DIR__ . '/../models/User.php';
+        
+        // Cria um novo "modelo" para ser usado neste controller
+        $this->model = new UserModel();
     }
     
-    
+    // Função que mostra todos os usuários cadastrados
     public function index() {
-        
+
+        // Pede para o modelo buscar todos os usuários no banco
         $users = $this->model->getAll();
         
-       
-        require_once 'app/views/users/index.php';
+        // Envia os dados ($users) para a página que vai exibir (a view)
+        require_once __DIR__ . '/../views/users/index.php';
     }
     
+    // Mostra os dados de UM usuário específico (pelo ID)
     public function show($id = null) {
+
+        // Se não tiver um ID, volta para a página principal
         if (!$id) {
             header('Location: /project/user/index');
             return;
         }
         
+        // Pega as informações do usuário com aquele ID
         $user = $this->model->getById($id);
         
+        // Se encontrou o usuário, mostra a página dele
         if ($user) {
-            require_once 'app/views/users/show.php';
+            require_once __DIR__ . '/../views/users/show.php';
         } else {
+
+            // Se não achou, mostra erro 404
             http_response_code(404);
-            echo "User not found";
+            echo "Usuário não encontrado.";
         }
     }
     
+    // Cria um novo usuário no banco
     public function create() {
+
+        // Se o formulário foi enviado (ou seja, veio via método POST)
         if ($_POST) {
+
+            // Pede para o modelo inserir o novo usuário no banco
             $this->model->create([
-                'name' => $_POST['name'],
-                'email' => $_POST['email']
+                'name' => $_POST['name'],   // Nome digitado
+                'email' => $_POST['email'] // Email digitado
             ]);
+
+            // Depois de criar, redireciona para a lista de usuários
             header('Location: /project/user/index');
         } else {
-            
+
+            // Se não enviou nada ainda, mostra o formulário de criação
             echo '
-            <form method="POST">
-                <input type="text" name="name" placeholder="Name" required>
-                <input type="email" name="email" placeholder="Email" required>
-                <button type="submit">Create User</button>
+            <form method="POST" style="display:flex; flex-direction:column; width:300px; gap:8px;">
+                <input type="text" name="name" placeholder="Nome" required>
+                <input type="email" name="email" placeholder="E-mail" required>
+                <button type="submit">Criar Usuário</button>
             </form>';
         }
     }
-    
-    //NOVA ACTION PARA EXCLUSÃO 
+
+    // Apaga um usuário do banco
     public function delete($id = null) {
+        
+        // Se não passar ID, mostra uma mensagem de erro
         if (!$id) {
-            // Se não houver ID, apenas volta para a lista
-            header('Location: /project/user/index');
+            echo "ID não fornecido.";
             return;
         }
-        
-        // 1. Chama o Model para executar a exclusão
-        $this->model->deleteById($id);
-        
-        // 2. Redireciona de volta para a lista de usuários
+
+        // Busca o usuário no banco para confirmar que ele existe
+        $user = $this->model->getById($id);
+
+        // Se não existir, mostra erro
+        if (!$user) {
+            echo "Usuário não encontrado.";
+            return;
+        }
+
+        // Se existir, deleta e volta pra lista
+        $this->model->delete($id);
         header('Location: /project/user/index');
     }
-    
 }
 ?>
