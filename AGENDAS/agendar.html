@@ -6,116 +6,264 @@
 <title>Agendar Sala</title>
 <link rel="stylesheet" href="login.css">
 <style>
-/* Estilos para diferenciar status dos horários */
-.ocupado { background-color: #ff9999; }   /* Vermelho claro: sala ocupada */
-.meu { background-color: #99ffb3; }       /* Verde claro: reserva do próprio usuário */
-.livre { background-color: #e6e6e6; cursor: pointer; } /* Cinza: disponível para reservar */
-.livre:hover { background-color: #cce5ff; } /* Azul claro ao passar o mouse */
 
-/* Estilos da tabela */
-table {border-collapse: collapse; width: 100%; margin-top: 20px;}
-th, td {border: 1px solid #ccc; padding: 8px; text-align: center;}
-th {background-color: #f4f4f4;}
+/* --- RESET/BASE --- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5; /* Fundo cinza claro */
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    width: 100%;
+    background-color: #007bff; /* Azul primário */
+    color: white;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+main {
+    width: 100%;
+    max-width: 900px;
+    padding: 20px;
+}
+
+/* --- ESTILO DE CARD (Substitui .login-container) --- */
+.card-container {
+    display: flex;
+    gap: 20px; /* Espaço entre o formulário e a tabela */
+    flex-wrap: wrap; /* Permite que os itens quebrem a linha em telas menores */
+}
+
+.card {
+    background-color: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    flex: 1; /* Faz com que o card ocupe o espaço disponível */
+    min-width: 350px; /* Garante um tamanho mínimo */
+}
+
+/* --- ESTILOS DO FORMULÁRIO --- */
+label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+select, input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box; /* Garante que padding não aumente a largura */
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background-color: #0d60ad; /* Verde para ação principal */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background-color: #0a73af;
+}
+
+/* --- ESTILOS DA TABELA DE HORÁRIOS --- */
+.table-card {
+    /* Garante que o cartão da tabela seja maior */
+    flex: 2;
+    min-width: 450px;
+}
+
+table {
+    border-collapse: separate; /* Muda de collapse para separate */
+    border-spacing: 0; /* Remove o espaçamento padrão */
+    width: 100%;
+    margin-top: 15px;
+    border-radius: 8px; /* Borda arredondada na tabela */
+    overflow: hidden; /* Garante que as bordas da tabela sejam arredondadas */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #eee; /* Linhas divisórias leves */
+}
+
+th {
+    background-color: #f8f9fa; /* Cabeçalho mais claro */
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+/* Estilos de Status (Mais cores e clareza) */
+.ocupado {
+    background-color: #f8d7da; /* Vermelho muito claro (Alerta) */
+    color: #721c24; /* Texto vermelho escuro */
+    font-weight: 500;
+}  
+.meu {
+    background-color: #d4edda; /* Verde muito claro (Sucesso) */
+    color: #155724; /* Texto verde escuro */
+    font-weight: 600;
+}      
+.livre {
+    background-color: #e6f7ff; /* Azul claro para disponível */
+    color: #004085; /* Texto azul escuro */
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+} 
+.livre:hover {
+    background-color: #cce5ff; /* Azul mais escuro ao passar o mouse */
+    font-weight: 600;
+    box-shadow: inset 0 0 0 1px #80bdff; /* Borda ao passar o mouse */
+}
+/* Estilo para a linha (tr) livre que é clicável */
+.tabelaHorarios tr.livre:hover td {
+    background-color: #cce5ff !important; /* Força a cor de hover na linha */
+}
+
+/* --- Efeito de Seleção no JavaScript --- */
+.selecionado {
+    background-color: #ffc107 !important; /* Amarelo/Laranja para o item selecionado */
+    color: #333 !important;
+    font-weight: bold;
+}
 </style>
 </head>
 
-<body>
-<header>
-    <h1>Agendamento de Salas</h1>
 </header>
 
 <main>
-<div class="login-container">
-<h2>Nova Reserva</h2>
+    <div class="card-container">
+        <div class="card">
+    <h2>Nova Reserva</h2>
 
-<!-- Formulário para reservar sala -->
-<form method="POST" action="agendar.php" id="formAgendar">
+    <form method="POST" action="agendar.php" id="formAgendar">
     <label for="sala">Sala:</label>
     <select name="id_sala" id="sala" required>
-        <option value="">Selecione uma sala</option>
-        <option value="1">Laboratório de Informática 1</option>
-        <option value="2">Laboratório de Informática 2</option>
-        <option value="3">Oficina de Eletrônica</option>
-        <option value="4">Auditório</option>
-    </select><br>
+    <option value="">Selecione uma sala</option>
+    <option value="1">Laboratório de Informática 1</option>
+    <option value="2">Laboratório de Informática 2</option>
+    <option value="3">Oficina de Eletrônica</option>
+    <option value="4">Auditório</option>
+    </select>
 
     <label for="data">Data da Reserva:</label>
-    <input type="date" name="data_reserva" id="data" required><br>
-
-    <!-- Inputs ocultos: preenchidos automaticamente ao escolher um horário -->
+    <input type="date" name="data_reserva" id="data" required>
+                
+    <label for="horario_selecionado">Horário de Início:</label>
+    <select name="horario_selecionado" id="horario_selecionado" required disabled> 
+    <option value="">Selecione a Data e a Sala</option>
+    </select>
+                    
     <input type="hidden" name="hora_inicio" id="hora_inicio">
     <input type="hidden" name="hora_fim" id="hora_fim">
 
-    <button type="submit">Agendar Sala</button>
-</form>
+                <button type="submit">Agendar Sala</button>
+            </form>
+        </div>
 
-<!-- Tabela que exibe os horários disponíveis e ocupados -->
-<h3>📅 Horários do Dia</h3>
-<table id="tabelaHorarios">
-<tr>
-    <th>Horário</th>
-    <th>Status</th>
-    <th>Usuário</th>
-</tr>
-</table>
-</div>
+        <div class="card table-card">
+            <h3>📅 Horários do Dia</h3>
+            <table id="tabelaHorarios">
+                <tr>
+                    <th>Horário</th>
+                    <th>Status</th>
+                    <th>Usuário</th>
+                </tr>
+            </table>
+        </div>
+    </div>
 </main>
 
 <script>
-// Lista de feriados fixos
-const feriados = ["2025-01-01", "2025-04-21", "2025-05-01", "2025-09-07", "2025-10-12", "2025-11-02", "2025-11-15", "2025-12-25"];
+// Se estiver livre -> permite clicar
+if (h.class === "livre") {
+    tr.classList.add("livre");
+    tr.addEventListener("click", () => {
+    // ... Seu código de cálculo de hora e alert ...
+
+    // --- NOVO: Limpa seleção anterior e marca a nova ---
+    document.querySelectorAll('#tabelaHorarios tr').forEach(row => {
+        row.classList.remove('selecionado');
+    });
+    tr.classList.add('selecionado');
+    // ----------------------------------------------------
+    
+    alert(`Você selecionou: ${h.hora} - ${document.getElementById("hora_fim").value}`);
+    });
+
+    // ... (Código anterior) ...
 
 const sala = document.getElementById('sala');
 const data = document.getElementById('data');
 const tabela = document.getElementById('tabelaHorarios');
-
-// Bloqueia finais de semana e feriados
-data.addEventListener("input", function() {
-    const d = new Date(this.value);
-    const diaSemana = d.getDay(); // 0 = domingo, 6 = sábado
-    if (diaSemana === 0 || diaSemana === 6 || feriados.includes(this.value)) {
-        alert("Não é permitido reservar finais de semana ou feriados!");
-        this.value = "";
-        tabela.innerHTML = "<tr><th>Horário</th><th>Status</th><th>Usuário</th></tr>";
-    }
-});
+// --- NOVA CONSTANTE ---
+const selectHorario = document.getElementById('horario_selecionado');
+// ----------------------
 
 // Função para buscar os horários do dia no servidor
 async function atualizarHorarios() {
     if(!sala.value || !data.value) return;
 
+    // Remove a seleção anterior
+    selectHorario.innerHTML = '<option value="">Selecione um Horário</option>';
+    selectHorario.disabled = true;
+    
     // Chama o PHP que retorna os horários em JSON
     const response = await fetch(`ver_horarios_json.php?id_sala=${sala.value}&data_reserva=${data.value}`);
     const horarios = await response.json();
 
     // Monta a tabela novamente
     tabela.innerHTML = "<tr><th>Horário</th><th>Status</th><th>Usuário</th></tr>";
+    
+    // Array para guardar os horários livres
+    const horariosLivres = []; 
+
     horarios.forEach(h => {
-    const tr = document.createElement('tr');
+        const tr = document.createElement('tr');
+        // ... (Criação de tdHora, tdStatus, tdUsuario) ...
 
-    const tdHora = document.createElement('td');
-    tdHora.textContent = h.hora;
+        const tdHora = document.createElement('td');
+        tdHora.textContent = h.hora;
 
-    const tdStatus = document.createElement('td');
-    tdStatus.textContent = h.status;
-    tdStatus.className = h.class;
+        const tdStatus = document.createElement('td');
+        tdStatus.textContent = h.status;
+        tdStatus.className = h.class;
 
-    const tdUsuario = document.createElement('td');
-    tdUsuario.textContent = h.usuario;
+        const tdUsuario = document.createElement('td');
+        tdUsuario.textContent = h.usuario;
 
-        // Se estiver livre -> permite clicar
-    if (h.class === "livre") {
-        tr.classList.add("livre");
-        tr.addEventListener("click", () => {
-        document.getElementById("hora_inicio").value = h.hora;
+        // Se estiver livre -> permite clicar e adiciona ao select
+        if (h.class === "livre") {
+            tr.classList.add("livre");
+            horariosLivres.push(h.hora); // Adiciona ao array
 
-                // Calcula hora final (30 minutos depois do início)
-        const [h1, m1] = h.hora.split(":").map(Number);
-        const fim = new Date(0,0,0,h1,m1+30);
-        document.getElementById("hora_fim").value = fim.toTimeString().substring(0,5);
-
-        alert(`Você selecionou: ${h.hora} - ${document.getElementById("hora_fim").value}`);
-        });
+            // Lógica de clique na TABELA
+            tr.addEventListener("click", () => {
+                selecionarHorario(h.hora, tr);
+            });
         }
 
         tr.appendChild(tdHora);
@@ -123,11 +271,78 @@ async function atualizarHorarios() {
         tr.appendChild(tdUsuario);
         tabela.appendChild(tr);
     });
+    
+    // --- LÓGICA PARA PREENCHER O SELECT E HABILITAR ---
+    if (horariosLivres.length > 0) {
+        horariosLivres.forEach(hora => {
+            const option = document.createElement('option');
+            option.value = hora;
+            option.textContent = hora;
+            selectHorario.appendChild(option);
+        });
+        selectHorario.disabled = false;
+    }
 }
+
+
+// --- NOVA FUNÇÃO: Lógica para selecionar o horário e preencher os campos ocultos ---
+function selecionarHorario(horaSelecionada, trElement) {
+    // 1. Calcula hora final (30 minutos depois do início)
+    const [h1, m1] = horaSelecionada.split(":").map(Number);
+    const fim = new Date(0,0,0,h1,m1+30);
+    const horaFim = fim.toTimeString().substring(0,5);
+    
+    // 2. Preenche os inputs ocultos
+    document.getElementById("hora_inicio").value = horaSelecionada;
+    document.getElementById("hora_fim").value = horaFim;
+    
+    // 3. Sincroniza o SELECT (se o clique veio da tabela)
+    if (trElement) {
+        selectHorario.value = horaSelecionada;
+        
+        // Aplica o estilo de seleção na linha da tabela
+        document.querySelectorAll('#tabelaHorarios tr').forEach(row => {
+            row.classList.remove('selecionado');
+        });
+        trElement.classList.add('selecionado');
+    }
+    
+    // 4. Feedback visual (pode remover o alert se for muito intrusivo)
+    // alert(`Você selecionou: ${horaSelecionada} - ${horaFim}`);
+}
+
+
+// --- NOVO EVENT LISTENER: Sincroniza a tabela quando o SELECT muda ---
+    selectHorario.addEventListener('change', function() {
+    const horaSelecionada = this.value;
+    
+    // Encontra o TR correspondente na tabela para aplicar o estilo
+    let trSelecionado = null;
+    const linhas = document.querySelectorAll('#tabelaHorarios tr.livre');
+    
+    linhas.forEach(tr => {
+        // Encontra o TD da hora, que é o primeiro TD (índice 0)
+        if (tr.children[0].textContent === horaSelecionada) {
+            trSelecionado = tr;
+        }
+    });
+
+    if (trSelecionado) {
+        selecionarHorario(horaSelecionada, trSelecionado);
+    } else {
+        // Se desmarcou (voltou para "Selecione um Horário")
+        document.getElementById("hora_inicio").value = "";
+        document.getElementById("hora_fim").value = "";
+        document.querySelectorAll('#tabelaHorarios tr').forEach(row => {
+            row.classList.remove('selecionado');
+        });
+    }
+});
 
 // Atualiza a tabela quando mudar a sala ou a data
 sala.addEventListener('change', atualizarHorarios);
 data.addEventListener('change', atualizarHorarios);
+}
 </script>
 
 </body>
