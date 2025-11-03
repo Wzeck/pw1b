@@ -1,62 +1,180 @@
+/* ===== RESET ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+/* ===== GERAL ===== */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f0f2f5;
+    background: linear-gradient(135deg, #eef2f7, #d6dde9);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== HEADER ===== */
+header {
+    background: #2c3e50;
+    color: #fff;
+    padding: 18px 0;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+}
+
+.header-content {
+    width: 90%;
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+header h1 {
+    font-size: 20px;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+nav a {
+    color: #ecf0f1;
+    text-decoration: none;
+    margin-left: 25px;
+    font-size: 15px;
+    font-weight: 500;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+nav a:hover,
+nav a.active {
+    color: #5dade2;
+}
+
+/* ===== MAIN ===== */
+main {
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
 }
 
-.container {
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    width: 350px;
+/* ===== CAIXA DE LOGIN ===== */
+.auth-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 45px 40px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.1);
+    width: 380px;
     text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.auth-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 45px rgba(0,0,0,0.15);
 }
 
 h2 {
-    color: #0066cc;
-    margin-bottom: 20px;
+    color: #2c3e50;
+    font-size: 22px;
+    margin-bottom: 5px;
 }
 
-label {
-    display: block;
-    margin: 15px 0 5px;
-    font-weight: bold;
+.subtitle {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-bottom: 25px;
+}
+
+/* ===== INPUTS ===== */
+.input-group {
+    position: relative;
+    margin-bottom: 22px;
     text-align: left;
 }
 
 input {
     width: 100%;
-    padding: 10px;
-    margin-top: 3px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    padding: 12px 12px;
+    border-radius: 8px;
+    border: 1px solid #bdc3c7;
+    outline: none;
+    font-size: 14px;
+    background: #ecf0f1;
+    color: #2c3e50;
+    transition: border-color 0.3s ease, background 0.3s ease;
 }
 
+input:focus {
+    border-color: #2980b9;
+    background: #fff;
+}
+
+/* Labels flutuantes */
+label {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    color: #7f8c8d;
+    pointer-events: none;
+    transition: 0.2s ease all;
+    background: transparent;
+}
+
+input:focus + label,
+input:not(:placeholder-shown) + label {
+    top: -10px;
+    left: 10px;
+    font-size: 12px;
+    background: #fff;
+    padding: 0 5px;
+    color: #2980b9;
+}
+
+/* ===== BOTÃO ===== */
 button {
     width: 100%;
-    padding: 10px;
-    margin-top: 20px;
-    border-radius: 5px;
+    padding: 14px;
+    border-radius: 8px;
     border: none;
-    background-color: #0066cc;
-    color: white;
-    font-weight: bold;
+    background: #2980b9;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
-    background-color: #004d99;
+    background: #1f618d;
+    transform: translateY(-2px);
 }
 
-p a {
-    color: #0066cc;
+/* ===== LINKS ===== */
+.signup-text {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+.signup-text a {
+    color: #2980b9;
     text-decoration: none;
+    font-weight: 500;
 }
 
-p a:hover {
+.signup-text a:hover {
     text-decoration: underline;
+}
+
+/* ===== FOOTER ===== */
+footer {
+    background: #2c3e50;
+    color: #bdc3c7;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 13px;
+    margin-top: auto;
 }

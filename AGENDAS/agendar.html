@@ -1,349 +1,304 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Agendar Sala</title>
+
+<!-- usa o mesmo CSS do login/cadastro -->
 <link rel="stylesheet" href="login.css">
+
 <style>
-
-/* --- RESET/BASE --- */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f0f2f5; /* Fundo cinza claro */
-    color: #333;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+/* ajustes visuais específicos da página (mantendo o mesmo estilo) */
+main { flex: 1; display:flex; justify-content:center; align-items:flex-start; padding:40px 0; }
+.agendar-container {
+    background:#fff;
+    border-radius:16px;
+    box-shadow:0 10px 35px rgba(0,0,0,0.1);
+    padding:40px;
+    width:950px;
+    display:flex;
+    gap:30px;
+    flex-wrap:wrap;
 }
+.agendar-container h2 { width:100%; color:#2c3e50; margin-bottom:10px; }
 
-header {
-    width: 100%;
-    background-color: #007bff; /* Azul primário */
-    color: white;
-    padding: 20px 0;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+/* form */
+.form-section, .tabela-section { flex:1; min-width:380px; }
+.form-section label { display:block; margin:15px 0 6px; font-weight:600; color:#2c3e50; }
+.form-section select, .form-section input[type="date"] {
+    width:100%; padding:12px; border-radius:8px; border:1px solid #bdc3c7; background:#ecf0f1; font-size:14px;
+    transition: border-color .3s, background .3s;
 }
+.form-section select:focus, .form-section input[type="date"]:focus { border-color:#2980b9; background:#fff; outline:none; }
+.form-section button { margin-top:20px; }
 
-main {
-    width: 100%;
-    max-width: 900px;
-    padding: 20px;
-}
+/* tabela */
+.tabela-section table { width:100%; border-collapse:collapse; border-radius:10px; overflow:hidden; box-shadow:0 3px 10px rgba(0,0,0,0.05); }
+.tabela-section th { background:#2980b9; color:#fff; padding:12px; text-transform:uppercase; font-size:14px; }
+.tabela-section td { padding:12px; text-align:center; border-bottom:1px solid #ecf0f1; }
+.tabela-section tr.livre { background:#e8f6ff; cursor:pointer; transition:background .2s; }
+.tabela-section tr.livre:hover { background:#d6ebff; }
+.tabela-section tr.ocupado { background:#f8d7da; color:#721c24; }
+.tabela-section tr.meu { background:#d4edda; color:#155724; font-weight:600; }
+.tabela-section tr.selecionado { background:#ffe58f !important; font-weight:bold; }
 
-/* --- ESTILO DE CARD (Substitui .login-container) --- */
-.card-container {
-    display: flex;
-    gap: 20px; /* Espaço entre o formulário e a tabela */
-    flex-wrap: wrap; /* Permite que os itens quebrem a linha em telas menores */
+/* toast */
+.toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  min-width: 260px;
+  padding: 14px 16px;
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+  color: #fff;
+  font-weight:600;
+  display: none;
+  z-index: 9999;
 }
+.toast.show { display:block; animation: toastIn .25s ease; }
+@keyframes toastIn { from { transform: translateY(-10px); opacity:0 } to { transform: translateY(0); opacity:1 } }
+.toast.success { background: linear-gradient(90deg,#2ecc71,#27ae60); }
+.toast.error { background: linear-gradient(90deg,#ff6b6b,#e74c3c); }
 
-.card {
-    background-color: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-    flex: 1; /* Faz com que o card ocupe o espaço disponível */
-    min-width: 350px; /* Garante um tamanho mínimo */
-}
+/* botão desabilitado */
+button[disabled] { opacity: 0.6; cursor: not-allowed; transform: none !important; }
 
-/* --- ESTILOS DO FORMULÁRIO --- */
-label {
-    display: block;
-    margin-top: 15px;
-    margin-bottom: 5px;
-    font-weight: 600;
-}
-
-select, input[type="date"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box; /* Garante que padding não aumente a largura */
-}
-
-button[type="submit"] {
-    width: 100%;
-    padding: 12px;
-    background-color: #0d60ad; /* Verde para ação principal */
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    margin-top: 20px;
-    transition: background-color 0.3s ease;
-}
-
-button[type="submit"]:hover {
-    background-color: #0a73af;
-}
-
-/* --- ESTILOS DA TABELA DE HORÁRIOS --- */
-.table-card {
-    /* Garante que o cartão da tabela seja maior */
-    flex: 2;
-    min-width: 450px;
-}
-
-table {
-    border-collapse: separate; /* Muda de collapse para separate */
-    border-spacing: 0; /* Remove o espaçamento padrão */
-    width: 100%;
-    margin-top: 15px;
-    border-radius: 8px; /* Borda arredondada na tabela */
-    overflow: hidden; /* Garante que as bordas da tabela sejam arredondadas */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-th, td {
-    padding: 12px;
-    text-align: center;
-    border-bottom: 1px solid #eee; /* Linhas divisórias leves */
-}
-
-th {
-    background-color: #f8f9fa; /* Cabeçalho mais claro */
-    font-weight: 600;
-    color: #555;
-    text-transform: uppercase;
-    font-size: 14px;
-}
-
-/* Estilos de Status (Mais cores e clareza) */
-.ocupado {
-    background-color: #f8d7da; /* Vermelho muito claro (Alerta) */
-    color: #721c24; /* Texto vermelho escuro */
-    font-weight: 500;
-}  
-.meu {
-    background-color: #d4edda; /* Verde muito claro (Sucesso) */
-    color: #155724; /* Texto verde escuro */
-    font-weight: 600;
-}      
-.livre {
-    background-color: #e6f7ff; /* Azul claro para disponível */
-    color: #004085; /* Texto azul escuro */
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-} 
-.livre:hover {
-    background-color: #cce5ff; /* Azul mais escuro ao passar o mouse */
-    font-weight: 600;
-    box-shadow: inset 0 0 0 1px #80bdff; /* Borda ao passar o mouse */
-}
-/* Estilo para a linha (tr) livre que é clicável */
-.tabelaHorarios tr.livre:hover td {
-    background-color: #cce5ff !important; /* Força a cor de hover na linha */
-}
-
-/* --- Efeito de Seleção no JavaScript --- */
-.selecionado {
-    background-color: #ffc107 !important; /* Amarelo/Laranja para o item selecionado */
-    color: #333 !important;
-    font-weight: bold;
+/* responsivo */
+@media (max-width: 980px) {
+  .agendar-container { width: 92%; padding: 24px; }
 }
 </style>
 </head>
+<body>
 
+<header>
+  <div class="header-content">
+    <h1>Agenda ETEC</h1>
+    <nav>
+      <a href="login.html">Login</a>
+      <a href="cadastro.html">Cadastro</a>
+      <a href="agendar.html" class="active">Agendar</a>
+    </nav>
+  </div>
 </header>
 
 <main>
-    <div class="card-container">
-        <div class="card">
-    <h2>Nova Reserva</h2>
+  <div class="agendar-container">
+    <h2>Agendar Sala</h2>
 
-    <form method="POST" action="agendar.php" id="formAgendar">
-    <label for="sala">Sala:</label>
-    <select name="id_sala" id="sala" required>
-    <option value="">Selecione uma sala</option>
-    <option value="1">Laboratório de Informática 1</option>
-    <option value="2">Laboratório de Informática 2</option>
-    <option value="3">Oficina de Eletrônica</option>
-    <option value="4">Auditório</option>
-    </select>
+    <!-- FORM -->
+    <div class="form-section">
+      <form id="formAgendar" autocomplete="off">
+        <label for="sala">Sala:</label>
+        <select id="sala" name="id_sala" required>
+          <option value="">Selecione uma sala</option>
+          <option value="1">Laboratório de Informática 1</option>
+          <option value="2">Laboratório de Informática 2</option>
+          <option value="3">Oficina de Eletrônica</option>
+          <option value="4">Auditório</option>
+        </select>
 
-    <label for="data">Data da Reserva:</label>
-    <input type="date" name="data_reserva" id="data" required>
-                
-    <label for="horario_selecionado">Horário de Início:</label>
-    <select name="horario_selecionado" id="horario_selecionado" required disabled> 
-    <option value="">Selecione a Data e a Sala</option>
-    </select>
-                    
-    <input type="hidden" name="hora_inicio" id="hora_inicio">
-    <input type="hidden" name="hora_fim" id="hora_fim">
+        <label for="data">Data da Reserva:</label>
+        <input id="data" name="data_reserva" type="date" required />
 
-                <button type="submit">Agendar Sala</button>
-            </form>
-        </div>
+        <label for="horario_selecionado">Horário:</label>
+        <select id="horario_selecionado" name="horario_selecionado" disabled required>
+          <option value="">Selecione data e sala</option>
+        </select>
 
-        <div class="card table-card">
-            <h3>📅 Horários do Dia</h3>
-            <table id="tabelaHorarios">
-                <tr>
-                    <th>Horário</th>
-                    <th>Status</th>
-                    <th>Usuário</th>
-                </tr>
-            </table>
-        </div>
+        <!-- campos ocultos que são enviados ao agendar.php -->
+        <input type="hidden" id="hora_inicio" name="hora_inicio">
+        <input type="hidden" id="hora_fim" name="hora_fim">
+
+        <button id="btnAgendar" type="submit">Agendar Sala</button>
+      </form>
     </div>
+
+    <!-- TABELA -->
+    <div class="tabela-section">
+      <h3>📅 Horários do Dia</h3>
+      <table id="tabelaHorarios">
+        <tr>
+          <th>Horário</th>
+          <th>Status</th>
+          <th>Usuário</th>
+        </tr>
+      </table>
+    </div>
+  </div>
 </main>
 
+<footer>
+  
+</footer>
+
+<!-- toast -->
+<div id="toast" class="toast"></div>
+
 <script>
-// Se estiver livre -> permite clicar
-if (h.class === "livre") {
-    tr.classList.add("livre");
-    tr.addEventListener("click", () => {
-    // ... Seu código de cálculo de hora e alert ...
-
-    // --- NOVO: Limpa seleção anterior e marca a nova ---
-    document.querySelectorAll('#tabelaHorarios tr').forEach(row => {
-        row.classList.remove('selecionado');
-    });
-    tr.classList.add('selecionado');
-    // ----------------------------------------------------
-    
-    alert(`Você selecionou: ${h.hora} - ${document.getElementById("hora_fim").value}`);
-    });
-
-    // ... (Código anterior) ...
-
+/* ===== elementos ===== */
 const sala = document.getElementById('sala');
-const data = document.getElementById('data');
+const dataInput = document.getElementById('data');
 const tabela = document.getElementById('tabelaHorarios');
-// --- NOVA CONSTANTE ---
 const selectHorario = document.getElementById('horario_selecionado');
-// ----------------------
+const hiddenInicio = document.getElementById('hora_inicio');
+const hiddenFim = document.getElementById('hora_fim');
+const form = document.getElementById('formAgendar');
+const btnAgendar = document.getElementById('btnAgendar');
+const toast = document.getElementById('toast');
 
-// Função para buscar os horários do dia no servidor
+/* mostra toast */
+function showToast(type, text, timeout = 3000) {
+  toast.className = `toast show ${type === 'ok' ? 'success' : 'error'}`;
+  toast.textContent = text;
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => {
+    toast.classList.remove('show');
+  }, timeout);
+}
+
+/* busca horários do servidor e popula tabela + select */
 async function atualizarHorarios() {
-    if(!sala.value || !data.value) return;
-
-    // Remove a seleção anterior
-    selectHorario.innerHTML = '<option value="">Selecione um Horário</option>';
+  if (!sala.value || !dataInput.value) {
+    tabela.innerHTML = '<tr><th>Horário</th><th>Status</th><th>Usuário</th></tr>';
+    selectHorario.innerHTML = '<option value="">Selecione data e sala</option>';
     selectHorario.disabled = true;
-    
-    // Chama o PHP que retorna os horários em JSON
-    const response = await fetch(`ver_horarios_json.php?id_sala=${sala.value}&data_reserva=${data.value}`);
-    const horarios = await response.json();
+    return;
+  }
 
-    // Monta a tabela novamente
-    tabela.innerHTML = "<tr><th>Horário</th><th>Status</th><th>Usuário</th></tr>";
-    
-    // Array para guardar os horários livres
-    const horariosLivres = []; 
+  selectHorario.innerHTML = '<option value="">Carregando...</option>';
+  selectHorario.disabled = true;
+  tabela.innerHTML = '<tr><th>Horário</th><th>Status</th><th>Usuário</th></tr>';
+
+  try {
+    const res = await fetch(`ver_horarios_json.php?id_sala=${encodeURIComponent(sala.value)}&data_reserva=${encodeURIComponent(dataInput.value)}`, {cache: "no-store"});
+    if (!res.ok) throw new Error('Erro na resposta');
+    const horarios = await res.json();
+
+    const livres = [];
 
     horarios.forEach(h => {
-        const tr = document.createElement('tr');
-        // ... (Criação de tdHora, tdStatus, tdUsuario) ...
+      const tr = document.createElement('tr');
+      tr.className = h.class || '';
+      tr.innerHTML = `<td>${h.hora}</td><td>${h.status}</td><td>${h.usuario || '-'}</td>`;
+      tabela.appendChild(tr);
 
-        const tdHora = document.createElement('td');
-        tdHora.textContent = h.hora;
-
-        const tdStatus = document.createElement('td');
-        tdStatus.textContent = h.status;
-        tdStatus.className = h.class;
-
-        const tdUsuario = document.createElement('td');
-        tdUsuario.textContent = h.usuario;
-
-        // Se estiver livre -> permite clicar e adiciona ao select
-        if (h.class === "livre") {
-            tr.classList.add("livre");
-            horariosLivres.push(h.hora); // Adiciona ao array
-
-            // Lógica de clique na TABELA
-            tr.addEventListener("click", () => {
-                selecionarHorario(h.hora, tr);
-            });
-        }
-
-        tr.appendChild(tdHora);
-        tr.appendChild(tdStatus);
-        tr.appendChild(tdUsuario);
-        tabela.appendChild(tr);
-    });
-    
-    // --- LÓGICA PARA PREENCHER O SELECT E HABILITAR ---
-    if (horariosLivres.length > 0) {
-        horariosLivres.forEach(hora => {
-            const option = document.createElement('option');
-            option.value = hora;
-            option.textContent = hora;
-            selectHorario.appendChild(option);
-        });
-        selectHorario.disabled = false;
-    }
-}
-
-
-// --- NOVA FUNÇÃO: Lógica para selecionar o horário e preencher os campos ocultos ---
-function selecionarHorario(horaSelecionada, trElement) {
-    // 1. Calcula hora final (30 minutos depois do início)
-    const [h1, m1] = horaSelecionada.split(":").map(Number);
-    const fim = new Date(0,0,0,h1,m1+30);
-    const horaFim = fim.toTimeString().substring(0,5);
-    
-    // 2. Preenche os inputs ocultos
-    document.getElementById("hora_inicio").value = horaSelecionada;
-    document.getElementById("hora_fim").value = horaFim;
-    
-    // 3. Sincroniza o SELECT (se o clique veio da tabela)
-    if (trElement) {
-        selectHorario.value = horaSelecionada;
-        
-        // Aplica o estilo de seleção na linha da tabela
-        document.querySelectorAll('#tabelaHorarios tr').forEach(row => {
-            row.classList.remove('selecionado');
-        });
-        trElement.classList.add('selecionado');
-    }
-    
-    // 4. Feedback visual (pode remover o alert se for muito intrusivo)
-    // alert(`Você selecionou: ${horaSelecionada} - ${horaFim}`);
-}
-
-
-// --- NOVO EVENT LISTENER: Sincroniza a tabela quando o SELECT muda ---
-    selectHorario.addEventListener('change', function() {
-    const horaSelecionada = this.value;
-    
-    // Encontra o TR correspondente na tabela para aplicar o estilo
-    let trSelecionado = null;
-    const linhas = document.querySelectorAll('#tabelaHorarios tr.livre');
-    
-    linhas.forEach(tr => {
-        // Encontra o TD da hora, que é o primeiro TD (índice 0)
-        if (tr.children[0].textContent === horaSelecionada) {
-            trSelecionado = tr;
-        }
+      if (h.class === 'livre') {
+        livres.push(h.hora);
+        // clique visual na linha
+        tr.addEventListener('click', () => selecionarHorario(h.hora, tr));
+      }
     });
 
-    if (trSelecionado) {
-        selecionarHorario(horaSelecionada, trSelecionado);
+    // popula o select com horários livres
+    selectHorario.innerHTML = '<option value="">Selecione um horário</option>';
+    if (livres.length > 0) {
+      livres.forEach(hora => {
+        const opt = document.createElement('option');
+        opt.value = hora;
+        opt.textContent = hora;
+        selectHorario.appendChild(opt);
+      });
+      selectHorario.disabled = false;
     } else {
-        // Se desmarcou (voltou para "Selecione um Horário")
-        document.getElementById("hora_inicio").value = "";
-        document.getElementById("hora_fim").value = "";
-        document.querySelectorAll('#tabelaHorarios tr').forEach(row => {
-            row.classList.remove('selecionado');
-        });
+      selectHorario.disabled = true;
     }
+
+  } catch (err) {
+    console.error(err);
+    tabela.innerHTML = '<tr><td colspan="3">Erro ao carregar horários.</td></tr>';
+    selectHorario.innerHTML = '<option value="">Erro</option>';
+    selectHorario.disabled = true;
+  }
+}
+
+/* seleciona horário (tanto por click quanto por select) */
+function selecionarHorario(hora, trElement = null) {
+  // calcula hora fim (+30 min)
+  const [H, M] = hora.split(':').map(Number);
+  const dt = new Date(0,0,0,H,M+30);
+  const horaFim = dt.toTimeString().slice(0,5);
+
+  hiddenInicio.value = hora;
+  hiddenFim.value = horaFim;
+
+  // visual
+  document.querySelectorAll('#tabelaHorarios tr').forEach(r => r.classList.remove('selecionado'));
+  if (trElement) trElement.classList.add('selecionado');
+
+  // sincroniza select
+  selectHorario.value = hora;
+}
+
+/* quando muda selectHorario via dropdown */
+selectHorario.addEventListener('change', function() {
+  const hora = this.value;
+  if (!hora) {
+    hiddenInicio.value = '';
+    hiddenFim.value = '';
+    document.querySelectorAll('#tabelaHorarios tr').forEach(r => r.classList.remove('selecionado'));
+    return;
+  }
+  // procura a linha correspondente
+  const linhas = Array.from(document.querySelectorAll('#tabelaHorarios tr.livre'));
+  const alvo = linhas.find(tr => tr.children[0].textContent === hora);
+  selecionarHorario(hora, alvo || null);
 });
 
-// Atualiza a tabela quando mudar a sala ou a data
+/* eventos para atualizar horários ao mudar sala/data */
 sala.addEventListener('change', atualizarHorarios);
-data.addEventListener('change', atualizarHorarios);
-}
-</script>
+dataInput.addEventListener('change', atualizarHorarios);
 
+/* envio via AJAX (fetch) */
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  // valida campos básicos
+  if (!sala.value || !dataInput.value || !hiddenInicio.value || !hiddenFim.value) {
+    showToast('erro', 'Selecione sala, data e horário antes de agendar.');
+    return;
+  }
+
+  btnAgendar.disabled = true;
+  btnAgendar.textContent = 'Enviando...';
+
+  try {
+    const formData = new FormData(form);
+    // envia para agendar.php (retorna JSON)
+    const res = await fetch('agendar.php', { method: 'POST', body: formData });
+    if (!res.ok) throw new Error('Erro na requisição');
+
+    const json = await res.json();
+    if (json.status === 'ok') {
+      showToast('ok', json.mensagem || 'Reserva realizada com sucesso!');
+      // limpa seleção visível
+      document.querySelectorAll('#tabelaHorarios tr').forEach(r => r.classList.remove('selecionado'));
+      hiddenInicio.value = '';
+      hiddenFim.value = '';
+      selectHorario.value = '';
+      // atualiza tabela para refletir nova reserva
+      await atualizarHorarios();
+    } else {
+      showToast('erro', json.mensagem || 'Erro ao agendar.');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('erro', 'Erro de rede. Tente novamente.');
+  } finally {
+    btnAgendar.disabled = false;
+    btnAgendar.textContent = 'Agendar Sala';
+  }
+});
+
+/* inicializa a tabela vazia na carga */
+document.addEventListener('DOMContentLoaded', () => {
+  tabela.innerHTML = `
+    <tr><th>Horário</th><th>Status</th><th>Usuário</th></tr>
+    <tr><td colspan="3">Selecione sala e data para ver os horários.</td></tr>
+  `;
+});
+</script>
 </body>
 </html>
